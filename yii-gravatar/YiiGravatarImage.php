@@ -22,9 +22,9 @@ class YiiGravatarImage extends CComponent
 
     const SECURE_API_URL = 'https://secure.gravatar.com/avatar/';
 
-    const MAX_IMAGE_SIZE = 512;
+    const SITE_API_URL = 'http://gravatar.com/emails/';
 
-    private $_email;
+    const MAX_IMAGE_SIZE = 512;
 
     private static $_emailHashed = false;
 
@@ -35,6 +35,10 @@ class YiiGravatarImage extends CComponent
     private static $_defaultImage = '404';
 
     private static $_rating = 'g';
+
+    private $_email;
+
+    private $_linked = false;
 
     private $_defaultImages = array(
         '404', 'mm', 'identicon',
@@ -62,9 +66,30 @@ class YiiGravatarImage extends CComponent
         return $apiUrl . '?' . http_build_query($this->getApiParams());
     }
 
+    public function linked($value = true)
+    {
+        $this->setLinked($value);
+        return $this;
+    }
+
+    public function setLinked($value=true)
+    {
+        $this->_linked = CPropertyValue::ensureBoolean($value);
+    }
+
+    public function getLinked()
+    {
+        return $this->_linked;
+    }
+
     public function getImage($altText=false, array $htmlOptions = array())
     {
-        return CHtml::image($this->__toString(), $altText, $htmlOptions);
+        $image = CHtml::image($this->__toString(), $altText, $htmlOptions);
+        if (true === $this->_linked)
+        {
+            $image = CHtml::link($image, self::SITE_API_URL);
+        }
+        return $image;
     }
 
     public function getApiParams()
@@ -134,6 +159,11 @@ class YiiGravatarImage extends CComponent
     {
         $this->setEmail($email);
         return $this;
+    }
+
+    public function email($email)
+    {
+        return $this->create($email);
     }
 
     public function secure($value = true)

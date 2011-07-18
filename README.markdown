@@ -9,7 +9,8 @@ Extract the [yii-gravatar](/malyshev/yii-gravatar/) from archive under protected
 
 The widget can be used in the Yii view files as shown in the following example.
 ```php
-<?php $this->widget('ext.yii-gravatar.YiiGravatar', array(
+<?php
+$this->widget('ext.yii-gravatar.YiiGravatar', array(
     'email'=>'malyshev.php@gmail.com',
     'size'=>80,
     'defaultImage'=>'http://www.amsn-project.net/images/download-linux.png',

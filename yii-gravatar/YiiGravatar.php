@@ -88,8 +88,9 @@ class YiiGravatar extends CWidget
         echo CHtml::image($this->getImageUrl(), $this->alt, $this->htmlOptions);
     }
 
-    private $_imageUrl;
-
+    /**
+     * @return string the Gravatar image URL
+     */
     public function getImageUrl()
     {
         if (null === $this->_imageUrl)

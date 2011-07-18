@@ -33,3 +33,8 @@ $this->widget('ext.yii-gravatar.YiiGravatar', array(
 
 [TODOs and BUGS](/malyshev/yii-gravatar/issues)
 
+##Change Log
+
+###July 19, 2011
+    * Initial release;
+

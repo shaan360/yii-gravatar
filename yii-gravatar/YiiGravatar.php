@@ -5,12 +5,29 @@
  * @author Sergey Malyshev <malyshev.php@gmail.com>
  */
 
+Yii::import('system.web.widgets.CWidget');
 
 /**
  * YiiGravatar class.
  *
  * YiiGravatar displays an Gravatar image on a page. The Gravatar is specified via the
  * {@link setEmail email} property.
+ *
+ * The widget can be used as shown in the following example.
+ * <code>
+ * $this->widget('ext.yii-gravatar.YiiGravatar', array(
+ *     'email'=>'malyshev.php@gmail.com',
+ *     'size'=>80,
+ *     'defaultImage'=>'http://www.amsn-project.net/images/download-linux.png',
+ *     'secure'=>false,
+ *     'rating'=>'r',
+ *     'emailHashed'=>false,
+ *     'htmlOptions'=>array(
+ *         'alt'=>'Gravatar image',
+ *         'title'=>'Gravatar image',
+ *     )
+ * ));
+ * </code>
  *
  * @author Sergey Malyshev <malyshev.php@gmail.com>
  * @version $Id$
@@ -74,18 +91,15 @@ class YiiGravatar extends CWidget
     public $htmlOptions = array();
 
     /**
-     * @var string the alternative text to be displayed when the image is unavailable
-     */
-    public $alt = '';
-
-    /**
      * This method overrides the parent implementation by rendering a normal image, using an IMG tag.
      * To get an image specific to a user need to set {@link setEmail email} property.
      * {@inheritdoc}
      */
     public function run()
     {
-        echo CHtml::image($this->getImageUrl(), $this->alt, $this->htmlOptions);
+        $altText = isset($this->htmlOptions['alt']) ? $this->htmlOptions['alt'] : '';
+        $imageTag = CHtml::image($this->getImageUrl(), $altText, $this->htmlOptions);
+        echo $imageTag;
     }
 
     /**
@@ -96,7 +110,9 @@ class YiiGravatar extends CWidget
         if (null === $this->_imageUrl)
         {
             $this->_imageUrl = $this->_secure ? self::SECURE_API_URL : self::PUBLIC_API_URL;
-            $this->_imageUrl .= $this->getEmailHashed() ? $this->email : md5(strtolower(trim($this->email)));
+            $this->_imageUrl .= $this->getEmailHashed() 
+                    ? $this->email
+                    : md5(strtolower(trim($this->email)));
             $this->_imageUrl .= '?' . http_build_query($this->getApiParams());
         }
 

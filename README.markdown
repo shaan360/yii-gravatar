@@ -8,7 +8,7 @@ Yii Gravatar is simple widget allows you to display a Gravatar images on your we
 Extract the [yii-gravatar](/malyshev/yii-gravatar/) from archive under protected/extensions
 
 The widget can be used in the Yii view files as shown in the following example.
-```php
+```
 <?php
 $this->widget('ext.yii-gravatar.YiiGravatar', array(
     'email'=>'malyshev.php@gmail.com',

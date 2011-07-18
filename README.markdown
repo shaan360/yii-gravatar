@@ -36,5 +36,5 @@ $this->widget('ext.yii-gravatar.YiiGravatar', array(
 ##Change Log
 
 ###July 19, 2011
-    * Initial release;
+- Initial release;
 

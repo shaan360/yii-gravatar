@@ -7,9 +7,7 @@
 
 
 /**
- * YiiGravatar represents an ...
- *
- * Description of YiiGravatar
+ * YiiGravatar class.
  *
  * @author Sergey Malyshev <malyshev.php@gmail.com>
  * @version $Id$
@@ -22,8 +20,6 @@ class YiiGravatar extends CWidget
     const PUBLIC_API_URL = 'http://www.gravatar.com/avatar/';
 
     const SECURE_API_URL = 'https://secure.gravatar.com/avatar/';
-
-    const MAX_IMAGE_SIZE = 512;
 
     private $_emailHashed = false;
 
@@ -50,11 +46,6 @@ class YiiGravatar extends CWidget
 
     public $alt = '';
 
-    public function init()
-    {
-
-    }
-
     public function run()
     {
         $src = $this->_secure ? self::SECURE_API_URL : self::PUBLIC_API_URL;
@@ -78,7 +69,7 @@ class YiiGravatar extends CWidget
         $value = strtolower($value);
         if (false === in_array($value, $this->_ratings))
         {
-            throw new CException(Yii::t('yii','Invalid rating value "{value}". Please make sure it is among ({enum}).',
+            throw new CException(Yii::t('application','Invalid rating value "{value}". Please make sure it is among ({enum}).',
 				array('{value}'=>$value, '{enum}'=>implode(', ',$this->_ratings))));
         }
 
@@ -90,17 +81,11 @@ class YiiGravatar extends CWidget
         return $this->_rating;
     }
 
-    public function defaultImage($value)
-    {
-        $this->setDefaultImage($value);
-        return $this;
-    }
-
     public function setDefaultImage($value)
     {
         if (false === (strpos($value, '.')) && false === in_array($value, $this->_defaultImages))
         {
-            throw new CException(Yii::t('yii','Invalid default image value "{value}". Please make sure it is among ({enum}).',
+            throw new CException(Yii::t('application','Invalid default image value "{value}". Please make sure it is among ({enum}).',
 				array('{value}'=>$value, '{enum}'=>implode(', ',$this->_defaultImages))));
         }
         $this->_defaultImage = $value;
@@ -131,20 +116,17 @@ class YiiGravatar extends CWidget
         return $this->_secure;
     }
 
-    public function setSize($size)
+    public function setSize($value)
     {
-        $size = CPropertyValue::ensureInteger($size);
+        $value = CPropertyValue::ensureInteger($value);
 
-        if ($size > self::MAX_IMAGE_SIZE)
+        if ($value < 1 || $value > 512)
         {
-            $size = self::MAX_IMAGE_SIZE;
-        }
-        else if($size <= 0)
-        {
-            $size = 1;
+            throw new CException(Yii::t('application','Invalid Gravatar size value "{value}". Please make sure it is between {min} and {max} (inclusive).',
+				array('{value}'=>$value, '{min}'=>1, '{max}'=>512)));
         }
 
-        $this->_size = $size;
+        $this->_size = $value;
     }
 
     public function getSize()

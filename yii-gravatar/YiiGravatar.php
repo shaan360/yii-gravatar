@@ -9,6 +9,9 @@
 /**
  * YiiGravatar class.
  *
+ * YiiGravatar displays an Gravatar image on a page. The Gravatar is specified via the
+ * {@link setEmail email} property.
+ *
  * @author Sergey Malyshev <malyshev.php@gmail.com>
  * @version $Id$
  * @package
@@ -23,38 +26,85 @@ class YiiGravatar extends CWidget
 
     private $_emailHashed = false;
 
+    /**
+     * @var boolean whether to use SSL connection
+     */
     private $_secure = false;
 
+    /**
+     * @var integer the Gravatar image size
+     */
     private $_size = 80;
 
-    private $_defaultImage = '404';
-
-    private $_rating = 'g';
-
+    /**
+     * @var string the Gravatar image email
+     */
     private $_email;
 
+    /**
+     * @var string the Gravatar default image
+     */
+    private $_defaultImage;
+
+    /**
+     * @var array list of possible Gravatar default image values
+     */
     private $_defaultImages = array(
         '404', 'mm', 'identicon',
         'monsterid', 'wavatar', 'retro'
     );
 
+    private $_rating = 'g';
+
+    /**
+     * @var array list of possible Gravatar image rating values
+     */
     private $_ratings = array(
         'g', 'pg', 'r', 'x'
     );
 
+    /**
+     * @internal the Gravatar image url
+     */
+    private $_imageUrl;
+
+    /**
+     * @var array the image HTML tag options
+     */
     public $htmlOptions = array();
 
+    /**
+     * @var string the alternative text to be displayed when the image is unavailable
+     */
     public $alt = '';
 
+    /**
+     * This method overrides the parent implementation by rendering a normal image, using an IMG tag.
+     * To get an image specific to a user need to set {@link setEmail email} property.
+     * {@inheritdoc}
+     */
     public function run()
     {
-        $src = $this->_secure ? self::SECURE_API_URL : self::PUBLIC_API_URL;
-        $src .= $this->getEmailHashed() ? $this->email : md5($this->email);
-        $src .= '?' . http_build_query($this->getApiParams());
-
-        echo CHtml::image($src, $this->alt, $this->htmlOptions);
+        echo CHtml::image($this->getImageUrl(), $this->alt, $this->htmlOptions);
     }
-    
+
+    private $_imageUrl;
+
+    public function getImageUrl()
+    {
+        if (null === $this->_imageUrl)
+        {
+            $this->_imageUrl = $this->_secure ? self::SECURE_API_URL : self::PUBLIC_API_URL;
+            $this->_imageUrl .= $this->getEmailHashed() ? $this->email : md5(strtolower(trim($this->email)));
+            $this->_imageUrl .= '?' . http_build_query($this->getApiParams());
+        }
+
+        return $this->_imageUrl;
+    }
+
+    /**
+     * @return array the Gravatar api parameters
+     */
     public function getApiParams()
     {
         return array(
@@ -64,6 +114,12 @@ class YiiGravatar extends CWidget
         );
     }
 
+    /**
+     * Set Gravatar image rating. Posible values 'g', 'pg', 'r' or 'x'.
+     * @see http://en.gravatar.com/site/implement/images/#rating
+     * @param string $value the rating value
+     * @throws CException if the value is not in the possible values list
+     */
     public function setRating($value)
     {
         $value = strtolower($value);
@@ -76,46 +132,82 @@ class YiiGravatar extends CWidget
         $this->_rating = $value;
     }
 
+    /**
+     * @return string the Gravatar image rating
+     */
     public function getRating()
     {
         return $this->_rating;
     }
 
+    /**
+     * Set Gravatar default image. Will displayed when an email address has no matching Gravatar image.
+     * Posible values '404', 'mm', 'identicon', 'monsterid', 'wavatar', 'retro'
+     * or absolute URL to the image file to use your own image.
+     * @see http://en.gravatar.com/site/implement/images/#default-image
+     * @param string $value the default Gravatar image
+     * @throws CException if the value is not in the possible values list or it is not absolute URL to the image file.
+     */
     public function setDefaultImage($value)
     {
-        if (false === (strpos($value, '.')) && false === in_array($value, $this->_defaultImages))
+        if (false === (strpos($value, '://')) && false === in_array($value, $this->_defaultImages))
         {
-            throw new CException(Yii::t('application','Invalid default image value "{value}". Please make sure it is among ({enum}).',
+            throw new CException(Yii::t('application','Invalid default image value "{value}". Please make sure it is among ({enum}) or it is absolute URL to the image file.',
 				array('{value}'=>$value, '{enum}'=>implode(', ',$this->_defaultImages))));
         }
         $this->_defaultImage = $value;
     }
 
+    /**
+     * @return string the default Gravatar image
+     */
     public function getDefaultImage()
     {
         return $this->_defaultImage;
     }
 
+    /**
+     * @see http://en.gravatar.com/emails/
+     * @param string $email the Gravatar image email address
+     */
     public function setEmail($email)
     {
-        $this->_email = strtolower(trim($email));
+        $this->_email = $email;
     }
 
+    /**
+     * @return string the Gravatar image email address
+     */
     public function getEmail()
     {
         return $this->_email;
     }
 
+    /**
+     * @see http://en.gravatar.com/site/implement/images/#secure-images
+     * @param boolean $value whether displaying Gravatar images being served over SSL
+     */
     public function setSecure($value = true)
     {
        $this->_secure = CPropertyValue::ensureBoolean($value);
     }
 
+    /**
+     * @return boolean whether displaying Gravatar images being served over SSL
+     */
     public function getSecure()
     {
         return $this->_secure;
     }
 
+    /**
+     * Set the Gravatar image size. You may request images anywhere from 1px up to 512px,
+     * however note that many users have lower resolution images, so requesting larger
+     * sizes may result in pixelation/low-quality images.
+     * By default, images are represented at 80px by 80px if no size parameter is supplied.
+     * @see http://en.gravatar.com/site/implement/images/#size
+     * @param integer $value the Gravatar image size
+     */
     public function setSize($value)
     {
         $value = CPropertyValue::ensureInteger($value);
@@ -129,16 +221,27 @@ class YiiGravatar extends CWidget
         $this->_size = $value;
     }
 
+    /**
+     * @return integer the Gravatar image size
+     */
     public function getSize()
     {
         return $this->_size;
     }
 
+    /**
+     * Set whether the Gravatar image email already hashed
+     * @see http://en.gravatar.com/site/implement/hash/
+     * @param boolean $value whether the Gravatar image email already hashed
+     */
     public function setEmailHashed($value = true)
     {
         $this->_emailHashed = CPropertyValue::ensureBoolean($value);
     }
 
+    /**
+     * @return boolean whether the Gravatar image email already hashed
+     */
     public function getEmailHashed()
     {
         return $this->_emailHashed;

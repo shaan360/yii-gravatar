@@ -13,8 +13,8 @@ Yii::import('system.web.widgets.CWidget');
  * YiiGravatar displays an Gravatar image on a page. The Gravatar is specified via the
  * {@link setEmail email} property.
  *
- * The widget can be used as shown in the following example.
- * <code>
+ * To use this widget, you may insert the following code in a view:
+ * <pre>
  * $this->widget('ext.yii-gravatar.YiiGravatar', array(
  *     'email'=>'malyshev.php@gmail.com',
  *     'size'=>80,
@@ -27,7 +27,7 @@ Yii::import('system.web.widgets.CWidget');
  *         'title'=>'Gravatar image',
  *     )
  * ));
- * </code>
+ * </pre>
  *
  * @author Sergey Malyshev <malyshev.php@gmail.com>
  * @version $Id$
@@ -86,7 +86,7 @@ class YiiGravatar extends CWidget
     private $_imageUrl;
 
     /**
-     * @var array the image HTML tag options
+     * @var array the HTML attributes that should be rendered in the HTML tag representing the Gravatar image
      */
     public $htmlOptions = array();
 

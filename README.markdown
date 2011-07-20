@@ -29,7 +29,7 @@ $this->widget('ext.yii-gravatar.YiiGravatar', array(
 
 [Gravatar images API documentation] (http://en.gravatar.com/site/implement/images/)
 
-[Git Hub project](/malyshev/yii-gravatar)
+[Project on Git Hub](/malyshev/yii-gravatar)
 
 [TODOs and BUGS](/malyshev/yii-gravatar/issues)
 
